@@ -1,0 +1,36 @@
+<html style="padding:0;margin:0;height:100%;width:100%;overflow:hidden">
+  <head>
+    <title>Hls.js demo - basic usage</title>
+  </head>
+
+  <body>
+    <script src="./hls.min.js"></script>
+	<div>
+		<video autoplay muted playsinline style="position: fixed;right: 0;bottom: 0;width: 100%;min-height: 100%;background-color: black" id="video"></video>
+	</div>
+
+    <script>
+      var video = document.getElementById('video');
+      if (Hls.isSupported()) {
+		const params = new URLSearchParams(document.location.search);
+        var hls = new Hls({
+          debug: true,
+        });
+        hls.loadSource(params.get("vidURL"));
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+          video.muted = true;
+          video.play();
+        });
+      }
+      // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+      // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
+      // This is using the built-in support of the plain video element, without using hls.js.
+      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = params.get("vidURL");
+        video.addEventListener('canplay', function () {
+          video.play();
+        });
+      }
+    </script>
+<html>
